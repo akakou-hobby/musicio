@@ -1,39 +1,74 @@
 package com.akakou.hobby.musicio
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.widget.Toast
 import com.google.android.youtube.player.YouTubeBaseActivity
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
 import com.google.android.youtube.player.YouTubePlayerView
 
-import kotlinx.android.synthetic.main.activity_youtube.*
+
+import com.google.android.youtube.player.YouTubePlayer.PlayerStateChangeListener
+
 
 
 class YoutubeActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListener {
     private val API_TOKEN = "AIzaSyCeWrJL5RurjqZz1f-okFt0JvATeYvkPhA"
-    val videList: MutableList<String> = mutableListOf()
     private var youTubeView: YouTubePlayerView? = null
+    public var youtubePlayer: YouTubePlayer? = null
+    public var videoList = YoutubeVideoList
+    public var videoId: String ? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_youtube);
-
-        videList.add("uwph0dv9E6U")
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_youtube)
 
         // Youtube Viewの初期化
-        youTubeView = findViewById(R.id.youtube_view) as YouTubePlayerView;
-        youTubeView!!.initialize(API_TOKEN, this);
+        youTubeView = findViewById(R.id.youtube_view) as YouTubePlayerView
+        youTubeView!!.initialize(API_TOKEN, this)
+        videoList.add("uwph0dv9E6U")
+        videoList.add("QJNANqm9QPQ")
     }
-
     /**
      * Youtube Viewの初期化が成功した場合に呼ばれる
      */
     override fun onInitializationSuccess(p0: YouTubePlayer.Provider?, player: YouTubePlayer?, wasRestored: Boolean) {
+        youtubePlayer = player
+        youtubePlayer!!.setPlayerStateChangeListener(object : PlayerStateChangeListener {
+            /**
+             * Youtubeの状態変更からイベントをとる
+             */
+
+            override fun onVideoEnded() {
+                /**
+                 * リスト内からひとつ取り出し再生する
+                 */
+                videoId = videoList.getOne()
+                if (videoId != null) {
+                    player!!.loadVideo(videoId)
+                }
+            }
+
+            override fun onVideoStarted() {}
+
+            override fun onLoading() {}
+
+            override fun onLoaded(arg0: String) {}
+
+            override fun onError(arg0: YouTubePlayer.ErrorReason) {}
+
+            override fun onAdStarted() {}
+        })
+
         if (!wasRestored) {
-            player!!.loadVideo(videList[0])
+            /**
+             * リスト内からひとつ取り出し再生する
+             */
+            videoId = videoList.getOne()
+            if (videoId != null) {
+                player!!.loadVideo(videoId)
+            }
         }
     }
 
@@ -45,4 +80,3 @@ class YoutubeActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
         Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
     }
 }
-
