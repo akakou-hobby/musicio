@@ -15,5 +15,4 @@ class WebHTTPD(port: Int) : NanoHTTPD(port) {
     override fun serve(session: NanoHTTPD.IHTTPSession): Response {
         return NanoHTTPD.newFixedLengthResponse("Hello")
     }
-
 }
