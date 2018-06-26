@@ -50,6 +50,4 @@ class YoutubeActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
         val errorMessage = String.format("ERR", errorReason.toString())
         Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
     }
-
-
 }

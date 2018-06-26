@@ -1,22 +1,26 @@
 package com.akakou.hobby.musicio
 
 import fi.iki.elonen.NanoHTTPD
-import fi.iki.elonen.NanoHTTPD.Response
-import java.io.IOException
+import android.content.res.Resources;
+
 
 
 /**
  * HTTPサーバ
  */
-class WebHTTPD(port: Int) : NanoHTTPD(port) {
+class WebHTTPD(port: Int, response: String) : NanoHTTPD(port) {
     val youtubeController = YoutubeController;
+    val responseHTML = response;
     /**
      * WEBのアクセス時のここが呼ばれる
      */
-    override fun serve(session: NanoHTTPD.IHTTPSession): Response {
+    override fun serve(session: IHTTPSession): Response {
         val videoId = session.getParms()["v"]
-        youtubeController.add(videoId!!)
-        youtubeController.play()
-        return NanoHTTPD.newFixedLengthResponse("ok")
+        if (videoId != null) {
+            youtubeController.add(videoId!!)
+            youtubeController.play()
+        }
+
+        return newFixedLengthResponse(responseHTML)
     }
 }
