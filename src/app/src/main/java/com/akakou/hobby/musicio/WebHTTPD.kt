@@ -14,7 +14,7 @@ class WebHTTPD(port: Int) : NanoHTTPD(port) {
      * WEBのアクセス時のここが呼ばれる
      */
     override fun serve(session: NanoHTTPD.IHTTPSession): Response {
-        val videoId = session.getParms()["videoId"]
+        val videoId = session.getParms()["v"]
         youtubeController.add(videoId!!)
         youtubeController.play()
         return NanoHTTPD.newFixedLengthResponse("ok")
