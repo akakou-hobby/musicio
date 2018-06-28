@@ -295,7 +295,7 @@ a.pure-button-primary {
             var url = document.getElementById('url').value;
 
             if (url.match(/https\:\/\/www.youtube.com\/watch/)){
-                var videoId = url.value.match(/v=\w+[^\&]/);
+                var videoId = url.match(/v=.+[^\&]/);
             } else if(url.match(/https\:\/\/youtu\.be/)) {
                 var videoId = "v=" + url.split('/')[3]
             } else {
