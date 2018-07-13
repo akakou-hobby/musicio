@@ -1,6 +1,7 @@
 <html>
     <meta charset="utf-8">
     <title>MusicIo</title>
+    
     <style>
 * {
     -webkit-box-sizing: border-box;
@@ -141,10 +142,9 @@ a.pure-button-primary {
     overflow: hidden;
     /* The following styles are required for the "scroll-over" effect */
     width: 100%;
-    height: 88%;
+    height: 70%;
     top: 0;
     left: 0;
-    position: fixed !important;
 }
 
 .splash {
@@ -288,26 +288,22 @@ a.pure-button-primary {
         font-size: 200%;
     }
 }
+
+.content-subhead {
+    text-transform: uppercase;
+    color: #aaa;
+    border-bottom: 1px solid #eee;
+    padding: 0.4em 0;
+    font-size: 90%;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+}
     </style>
 
-    <script>
-        function submit() {
-            var url = document.getElementById('url').value;
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 
-            if (url.match(/https\:\/\/www.youtube.com\/watch/)){
-                var videoId = url.match(/v=.+[^\&]/);
-            } else if(url.match(/https\:\/\/youtu\.be/)) {
-                var videoId = "v=" + url.split('/')[3]
-            } else {
-                return;
-            }
-
-            if (videoId != null) {
-                location.href = "?" + videoId;
-            }
-            alert("send !");
-        } 
-    </script>
 
     <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
 
@@ -319,14 +315,95 @@ a.pure-button-primary {
     </div>
 
     <div class="splash-container">
-        <div class="splash">
-            <input class="splash-head" placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX" id="url"></input>
+
+        <div id="keywordForm" class="splash">
+            <input v-model="word" class="splash-head" placeholder="type the keyword" id="url"></input>
             <p class="splash-subhead">
-                Please type the video's URL to the form.
+                {{ message  }}
             </p>
-            <p>
-                <a onclick="submit()" class="pure-button pure-button-primary">Play the video</a>
-            </p>
+            <button v-on:click="submit(word)" class="pure-button pure-button-primary">search</button>
         </div>
     </div>
+
+
+
+    <div id="videoList">
+      <ol>
+        <li v-for="video in videoList">
+          <div>
+            <h2 class="content-subhead">{{ video.title }}</h2>
+            <p style="width: 50%">{{ video.description }}</p>
+            <img v-bind:src='video.image'></img>
+            <br>
+            <button v-on:click="click(video.id)" class="pure-button" style="background: rgb(240,240,240);">{{ video.message }}</button>
+          </div>
+        </li>
+      </ol>
+    </div>
+<script>
+  var keywordForm = new Vue({
+    el: '#keywordForm',
+    data: {
+      message: 'Please type the keywords of video to the form.',
+      word: ''
+    },
+    methods: {
+      submit: function (keyword) {
+        search(keyword);
+      }
+    }
+  })
+</script>
+
+<script>
+  var videoListElement = new Vue({
+  el: '#videoList',
+  data: {
+    videoList: []
+  },
+  methods: {
+    click: (videoId) => {
+      var hit_element = videoListElement.$data.videoList.find((item) => {
+        if (item.id == videoId) {
+          return true
+        } else{
+          return false
+        }
+      });
+
+      hit_element.message = "THE VIDEO IS ADDED TO QUEUE";
+  	  axios.get('?' + videoId);
+  }}
+});
+
+function search(keyword) {
+  videoListElement.$data.videoList = [];
+
+  axios.get('https://www.googleapis.com/youtube/v3/search', {
+    params: {
+      type: "video",
+      part: "snippet",
+      regionCode: "JP",
+      key: "AIzaSyCeWrJL5RurjqZz1f-okFt0JvATeYvkPhA",
+      q: keyword
+    }
+  }).then((response) => {
+    console.log(response);
+
+    for (let item of response.data.items) {
+      videoListElement.$data.videoList.push(
+        {
+          id: item.id.videoId,
+          title: item.snippet.title,
+          description: item.snippet.description,
+          image: item.snippet.thumbnails.medium.url,
+          message: "ADD TO THE QUEUE"
+        }
+
+      );
+    }
+  });
+}
+    </script>
+
 </html>
