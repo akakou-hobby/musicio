@@ -2,6 +2,7 @@ package com.akakou.hobby.musicio
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import com.google.android.youtube.player.YouTubePlayer
 
 object YoutubeController {
@@ -31,7 +32,9 @@ object YoutubeController {
                 play()
             }
 
-            override fun onVideoStarted() {}
+            override fun onVideoStarted() {
+                nowPlaying = true
+            }
 
             override fun onLoading() {}
 
@@ -39,7 +42,7 @@ object YoutubeController {
 
             override fun onError(arg0: YouTubePlayer.ErrorReason) {
                 nowPlaying = false
-                Log.d("Debug", "Error")
+                play()
             }
 
             override fun onAdStarted() {}
@@ -61,7 +64,6 @@ object YoutubeController {
             val videoId = videoList[0]
             videoList.removeAt(0)
             youtubePlayer!!.loadVideo(videoId)
-            nowPlaying = true
             return true
         }
         return false

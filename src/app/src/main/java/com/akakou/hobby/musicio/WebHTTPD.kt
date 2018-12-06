@@ -16,6 +16,7 @@ class WebHTTPD(port: Int, response: String) : NanoHTTPD(port) {
      */
     override fun serve(session: IHTTPSession): Response {
         val videoId = session.getParms()["v"]
+
         if (videoId != null) {
             youtubeController.add(videoId!!)
             youtubeController.play()
